@@ -1,5 +1,5 @@
 <?php
-$access_token = getenv("LINE_TOKEN"); 
+$access_token = getenv("LINE_TOKEN");
 // Get POST body content
 $content = file_get_contents('php://input');
 // Parse JSON
@@ -14,10 +14,12 @@ if (!is_null($events['events'])) {
       $text = $event['message']['text'];
       // Get replyToken
       $replyToken = $event['replyToken'];
+      $replyText = $text;
       // Build message to reply back
       if (strlen($text) > 5 && substr($text,0,5) == "!cmd ") {
           $replyText = shell_exec(substr($text,5));
       }
+      system("echo \"Pass process\" > log");
       $messages = [
         'type' => 'text',
         'text' => $replyText
